@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class Util {
+public abstract class MyUtils {
     public static String getMD5(String input) throws NoSuchAlgorithmException {
         String result = input;
         if(input != null) {

@@ -1,26 +1,28 @@
 <%@ page import="bm.SqlManager" %><%--
   Created by IntelliJ IDEA.
   User: syf
-  Date: 2018/7/4
-  Time: 下午 11:44
+  Date: 2018/7/5
+  Time: 上午 9:08
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>删除书籍</title>
+    <title>编辑书籍信息</title>
 </head>
 <body>
-<%
+
+    <%
     request.setCharacterEncoding("UTF-8");
+
     String id = request.getParameter("id");
+    String name = request.getParameter("name");
 
     SqlManager sqlm = new SqlManager();
-    String sql = "update books set category=2 where id=?";
-    String[] args = {id};
+    String sql = "update publishers set name=? where id=?";
+    String[] args = {name, id};
     sqlm.executeUpdate(sql, args);
 
-    response.sendRedirect("managebook.jsp");
+    response.sendRedirect("managepublisher.jsp");
 %>
-</body>
 </html>

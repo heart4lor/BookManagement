@@ -1,7 +1,6 @@
 <%@ page import="bm.User" %>
-<%@ page import="bm.SqlManager" %>
 <%@ page import="java.sql.ResultSet" %>
-<%--
+<%@ page import="bm.SqlManager" %><%--
   Created by IntelliJ IDEA.
   User: syf
   Date: 2018/7/4
@@ -33,15 +32,15 @@
     if (user == null) {
         out.print("<script language=\"JavaScript\">notLoginError();</script>");
     }
-    SqlManager sqlm = new SqlManager();
 
-    int role = user.getRole();
-    if(role != 3 && role != 2)
+    SqlManager sqlm = new SqlManager();
+    int r = user.getRole();
+    if (r != 3 && r != 5)
         out.print("<script language=\"JavaScript\">noAccess();</script>");
 %>
 
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="index.jsp">图书管理系统</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">图书管理系统</a>
     <input class="form-control form-control-dark w-100" type="text" placeholder="搜索" aria-label="Search">
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -65,62 +64,36 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="managebook.jsp">
+                        <a class="nav-link" href="managebook.jsp">
                             <span data-feather="file"></span>
                             书籍管理
                         </a>
                     </li>
-                    <%--<li class="nav-item">--%>
-                        <%--<a class="nav-link" href="managepublisher.jsp">--%>
-                            <%--<span data-feather="shopping-cart"></span>--%>
-                            <%--出版社管理--%>
-                        <%--</a>--%>
-                    <%--</li>--%>
-                    <%--<li class="nav-item">--%>
-                        <%--<a class="nav-link" href="manageuser.jsp">--%>
-                            <%--<span data-feather="users"></span>--%>
-                            <%--用户管理--%>
-                        <%--</a>--%>
-                    <%--</li>--%>
-                    <%--<li class="nav-item">--%>
-                        <%--<a class="nav-link" href="managedb.jsp">--%>
-                            <%--<span data-feather="layers"></span>--%>
-                            <%--数据表管理--%>
-                        <%--</a>--%>
-                    <%--</li>--%>
+                    <li class="nav-item">
+                        <a class="nav-link" href="managepublisher.jsp">
+                            <span data-feather="shopping-cart"></span>
+                            出版社管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manageuser.jsp">
+                            <span data-feather="users"></span>
+                            用户管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="managedb.jsp">
+                            <span data-feather="layers"></span>
+                            数据表管理
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <br><br>
-            <div>
-                <h2 class="h2">
-                    图书列表
-                    <%--<button class="btn btn-lg btn-outline-secondary" data-toggle="modal" data-target="#addmodal"--%>
-                            <%--style="float: right;">添加图书--%>
-                    <%--</button>--%>
-                </h2>
-            </div>
-            <div class="modal fade" id="addmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog" role="form">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">借阅书籍</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="addbook.jsp" method="post">
-                                <button type="submit" class="btn btn-primary">是的</button>
-                            </form>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-            <br>
+            <h2>bm.books</h2><br>
             <div class="table-responsive">
                 <table class="table table-striped table-sm" id="list">
                     <thead>
@@ -130,9 +103,8 @@
                         <th>作者</th>
                         <th>出版社</th>
                         <th>价格</th>
-                        <th>状态</th>
+                        <th>类别</th>
                         <th>简介</th>
-                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -141,7 +113,7 @@
                             String query = "select books.Id as id, number, books.name as name, author, publishers.name as publisher, price, categories.name as category, profile " +
                                     "from publishers right join books on publishers.Id=books.publisher " +
                                     "left join categories on categories.Id=books.category " +
-                                    "order by books.Id DESC;";
+                                    "order by books.Id DESC limit 5;";
 //                            query = String.format(query, p * LIMIT, LIMIT);
                             ResultSet rs3 = sqlm.executeQuery(query);
                             try {
@@ -154,7 +126,7 @@
                                     float price = rs3.getFloat("price");
                                     String category = rs3.getString("category");
                                     String profile = rs3.getString("profile");
-                                    if(profile != null){
+                                    if (profile != null) {
                                         profile = profile.replace("\n", "");
                                         profile = profile.replace("\r", "");
                                     }
@@ -198,12 +170,40 @@
                                 </div><!-- /.modal-content -->
                             </div><!-- /.modal -->
                         </div>
-                        <td>
-                            <p hidden><%=id%></p>
-                            <div class="btn-group mr-2">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="borrowBook(<%=id%>);"><%=category.equals("在馆") ? "借阅" : "预约"%>
-                                </button>
-                            </div>
+                    </tr>
+                    <%
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            out.print("<script language=\"JavaScript\">searchError();</script>");
+                        }
+                    %>
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+            <h2>bm.publishers</h2><br>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm" id="list2">
+                    <thead>
+                    <tr>
+                        <th>出版社编号</th>
+                        <th>出版社名</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <%
+                            query = "select * from publishers";
+                            rs3 = sqlm.executeQuery(query);
+                            try {
+                                while (rs3.next()) {
+                                    int id = rs3.getInt("Id");
+                                    String name = rs3.getString("name");
+                        %>
+                        <td><%=id%>
+                        </td>
+                        <td><%=name%>
                         </td>
                     </tr>
                     <%
@@ -215,6 +215,117 @@
                     %>
                     </tbody>
                 </table>
+            </div>
+            <br><br>
+            <h2>bm.roles</h2><br>
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm" id="list3">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>角色</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <%
+                                query = "select username, role from users";
+                                rs3 = sqlm.executeQuery(query);
+                                try {
+                                    while (rs3.next()) {
+                                        int role = rs3.getInt("role");
+                                        String name = rs3.getString("username");
+                            %>
+                            <td><%=name%>
+                            </td>
+                            <td><%=role%>
+                            </td>
+                        </tr>
+                        <%
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                out.print("<script language=\"JavaScript\">searchError();</script>");
+                            }
+                        %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br><br>
+            <h2>bm.roles</h2><br>
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm" id="list4">
+                        <thead>
+                        <tr>
+                            <th>角色代码</th>
+                            <th>角色</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <%
+                                query = "select * from roles";
+                                rs3 = sqlm.executeQuery(query);
+                                try {
+                                    while (rs3.next()) {
+                                        int id = rs3.getInt("Id");
+                                        String role = rs3.getString("name");
+                            %>
+                            <td><%=id%>
+                            </td>
+                            <td><%=role%>
+                            </td>
+                        </tr>
+                        <%
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                out.print("<script language=\"JavaScript\">searchError();</script>");
+                            }
+                        %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br><br>
+            <h2>bm.categories</h2><br>
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm" id="list5">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>分类</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <%
+                                query = "select * from categories";
+                                rs3 = sqlm.executeQuery(query);
+                                try {
+                                    while (rs3.next()) {
+                                        int id = rs3.getInt("Id");
+                                        String name = rs3.getString("name");
+                            %>
+                            <td><%=id%>
+                            </td>
+                            <td><%=name%>
+                            </td>
+                        </tr>
+                        <%
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                out.print("<script language=\"JavaScript\">searchError();</script>");
+                            }
+                        %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
